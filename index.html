@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIC Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(102, 126, 234, 0.6), rgba(118, 75, 162, 0.6)), url('image.jpg');
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+  /* Optional: Add a semi-transparent layer to improve contrast */
+  .overlay {
+    background-color: rgba(0, 0, 0, 0.4); /* or remove if not needed */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+  }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #718096;
+            margin-top: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+
+        .message {
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .dashboard {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-info {
+            color: #333;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #e53e3e;
+            padding: 0.5rem 1rem;
+            width: auto;
+        }
+
+        .logout-btn:hover {
+            background: #c53030;
+        }
+
+        .tracking-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn-start {
+            background: #38a169;
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+        }
+
+        .btn-start:hover {
+            background: #2f855a;
+        }
+
+        .btn-stop {
+            background: #e53e3e;
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+        }
+
+        .btn-stop:hover {
+            background: #c53030;
+        }
+
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .status.active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status.inactive {
+            background: #f7fafc;
+            color: #4a5568;
+        }
+
+        .admin-section {
+            margin-top: 2rem;
+        }
+
+        .user-list {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .user-item {
+            background: #f7fafc;
+            padding: 1rem;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .view-btn {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .view-btn:hover {
+            background: #2c5282;
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .map-info {
+            background: #f7fafc;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+
+        .session-selector {
+            margin-bottom: 1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginForm" class="container">
+        <h1>Login</h1>
+        <h1>NIC location Tracker</h1>
+        
+        <div id="message"></div>
+        
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+        </div>
+        
+        <button class="btn" onclick="login()">Login</button>
+        <button class="btn btn-secondary" onclick="showRegister()">Register</button>
+    </div>
+
+    <!-- Registration Form -->
+    <div id="registerForm" class="container hidden">
+        <h1>Register</h1>
+        <div id="registerMessage"></div>
+        
+        <div class="form-group">
+            <label for="regUsername">Username:</label>
+            <input type="text" id="regUsername" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="regPassword">Password:</label>
+            <input type="password" id="regPassword" required>
+        </div>
+        
+        <button class="btn" onclick="register()">Register</button>
+        <button class="btn btn-secondary" onclick="showLogin()">Back to Login</button>
+    </div>
+
+    <!-- User Dashboard -->
+    <div id="userDashboard" class="container dashboard hidden">
+        <div class="dashboard-header">
+            <div class="user-info">Welcome, <span id="currentUser"></span></div>
+            <button class="btn logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="tracking-section">
+            <button id="trackingBtn" class="btn btn-start" onclick="toggleTracking()">Start Sharing Location</button>
+            <div id="trackingStatus" class="status inactive">Location sharing is stopped</div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="container dashboard hidden">
+        <div class="dashboard-header">
+            <div class="user-info">Admin Panel</div>
+            <button class="btn logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="admin-section">
+            <h2>Users</h2>
+            <div id="userList" class="user-list"></div>
+        </div>
+        
+        <div id="mapSection" class="hidden">
+            <h2>User Tracking Data</h2>
+            <div class="session-selector">
+                <label for="sessionSelect">Select Session:</label>
+                <select id="sessionSelect" onchange="showSelectedSession()">
+                    <option value="">Select a session...</option>
+                </select>
+            </div>
+            <div id="map"></div>
+            <div id="mapInfo" class="map-info"></div>
+        </div>
+    </div>
+
+
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let isTracking = false;
+        let trackingInterval = null;
+        let map = null;
+        let userTrackingData = [];
+
+        // API Base URL
+        const API_BASE = 'http://localhost:3000/api';
+
+        // Utility functions
+        function showMessage(elementId, message, type = 'success') {
+            const messageEl = document.getElementById(elementId);
+            messageEl.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageEl.innerHTML = '';
+            }, 3000);
+        }
+
+        function showElement(elementId) {
+            document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+            document.getElementById(elementId).classList.remove('hidden');
+        }
+
+        // Authentication functions
+        function showLogin() {
+            showElement('loginForm');
+        }
+
+        function showRegister() {
+            showElement('registerForm');
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showMessage('message', 'Please fill in all fields', 'error');
+                return;
+            }
+
+            fetch(`${API_BASE}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showMessage('message', data.error, 'error');
+                } else {
+                    currentUser = data;
+                    document.getElementById('currentUser').textContent = data.username;
+                    
+                    if (data.isAdmin) {
+                        showElement('adminDashboard');
+                        loadUsers();
+                    } else {
+                        showElement('userDashboard');
+                        checkTrackingStatus();
+                    }
+                }
+            })
+            .catch(error => {
+                showMessage('message', 'Login failed', 'error');
+            });
+        }
+
+        function register() {
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            
+            if (!username || !password) {
+                showMessage('registerMessage', 'Please fill in all fields', 'error');
+                return;
+            }
+
+            fetch(`${API_BASE}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    showMessage('registerMessage', data.error, 'error');
+                } else {
+                    showMessage('registerMessage', 'Registration successful! Please login.', 'success');
+                    setTimeout(() => {
+                        showLogin();
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                showMessage('registerMessage', 'Registration failed', 'error');
+            });
+        }
+
+        function logout() {
+            if (isTracking) {
+                stopTracking();
+            }
+            currentUser = null;
+            showLogin();
+        }
+
+        // Tracking functions
+        function checkTrackingStatus() {
+            fetch(`${API_BASE}/tracking-status/${currentUser.userId}`)
+            .then(response => response.json())
+            .then(data => {
+                isTracking = data.isTracking;
+                updateTrackingUI();
+            });
+        }
+
+        function toggleTracking() {
+            if (isTracking) {
+                stopTracking();
+            } else {
+                startTracking();
+            }
+        }
+
+        function startTracking() {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by this browser.');
+                return;
+            }
+
+            fetch(`${API_BASE}/start-tracking`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: currentUser.userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Failed to start tracking');
+                } else {
+                    isTracking = true;
+                    updateTrackingUI();
+                    startLocationUpdates();
+                }
+            });
+        }
+
+        function stopTracking() {
+            fetch(`${API_BASE}/stop-tracking`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: currentUser.userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                isTracking = false;
+                updateTrackingUI();
+                stopLocationUpdates();
+            });
+        }
+
+        function updateTrackingUI() {
+            const btn = document.getElementById('trackingBtn');
+            const status = document.getElementById('trackingStatus');
+            
+            if (isTracking) {
+                btn.textContent = 'Stop Sharing Location';
+                btn.className = 'btn btn-stop';
+                status.textContent = 'Location sharing is active';
+                status.className = 'status active';
+            } else {
+                btn.textContent = 'Start Sharing Location';
+                btn.className = 'btn btn-start';
+                status.textContent = 'Location sharing is stopped';
+                status.className = 'status inactive';
+            }
+        }
+
+        function startLocationUpdates() {
+            trackingInterval = setInterval(() => {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const { latitude, longitude } = position.coords;
+                        
+                        fetch(`${API_BASE}/save-location`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                userId: currentUser.userId,
+                                latitude,
+                                longitude
+                            })
+                        });
+                    },
+                    error => {
+                        console.error('Error getting location:', error);
+                    }
+                );
+            }, 5000); // Update every 5 seconds
+        }
+
+        function stopLocationUpdates() {
+            if (trackingInterval) {
+                clearInterval(trackingInterval);
+                trackingInterval = null;
+            }
+        }
+
+        // Admin functions
+        function loadUsers() {
+            fetch(`${API_BASE}/users`)
+            .then(response => response.json())
+            .then(users => {
+                const userList = document.getElementById('userList');
+                userList.innerHTML = '';
+                
+                users.forEach(user => {
+                    const userItem = document.createElement('div');
+                    userItem.className = 'user-item';
+                    userItem.innerHTML = `
+                        <span>${user.username}</span>
+                        <button class="view-btn" onclick="viewUserTracking(${user.id}, '${user.username}')">View Tracking</button>
+                    `;
+                    userList.appendChild(userItem);
+                });
+            });
+        }
+
+        function viewUserTracking(userId, username) {
+            fetch(`${API_BASE}/user-tracking/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                userTrackingData = data;
+                populateSessionSelector(username);
+                document.getElementById('mapSection').classList.remove('hidden');
+            });
+        }
+
+        function populateSessionSelector(username) {
+            const select = document.getElementById('sessionSelect');
+            select.innerHTML = '<option value="">Select a session...</option>';
+            
+            userTrackingData.forEach((session, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${username} - ${new Date(session.startTime).toLocaleString()}`;
+                select.appendChild(option);
+            });
+        }
+
+        function showSelectedSession() {
+            const select = document.getElementById('sessionSelect');
+            const sessionIndex = select.value;
+            
+            if (sessionIndex === '') {
+                return;
+            }
+            
+            const session = userTrackingData[sessionIndex];
+            initializeMap(session);
+        }
+function initializeMap(session) {
+    if (!session.locations || session.locations.length < 2) {
+        document.getElementById('mapInfo').innerHTML = '<p>Not enough location data.</p>';
+        return;
+    }
+
+    const mapContainer = document.getElementById('map');
+    const firstLocation = session.locations[0];
+
+    map = new google.maps.Map(mapContainer, {
+        zoom: 14,
+        center: firstLocation
+    });
+
+    const directionsService = new google.maps.DirectionsService();
+    const directionsRenderer = new google.maps.DirectionsRenderer({ map });
+
+    const waypoints = session.locations.slice(1, session.locations.length - 1).map(loc => ({
+        location: new google.maps.LatLng(loc.lat, loc.lng),
+        stopover: true
+    }));
+
+    directionsService.route({
+        origin: new google.maps.LatLng(firstLocation.lat, firstLocation.lng),
+        destination: new google.maps.LatLng(
+            session.locations[session.locations.length - 1].lat,
+            session.locations[session.locations.length - 1].lng
+        ),
+        waypoints: waypoints,
+        travelMode: google.maps.TravelMode.DRIVING
+    }, (result, status) => {
+        if (status === google.maps.DirectionsStatus.OK) {
+            directionsRenderer.setDirections(result);
+        } else {
+            console.error("Directions request failed due to " + status);
+        }
+    });
+
+    // Distance and Time Info
+    const distance = calculateDistance(session.locations);
+    const duration = new Date(session.endTime) - new Date(session.startTime);
+    document.getElementById('mapInfo').innerHTML = `
+        <h3>Trip Information</h3>
+        <p><strong>Start:</strong> ${new Date(session.startTime).toLocaleString()}</p>
+        <p><strong>End:</strong> ${new Date(session.endTime).toLocaleString()}</p>
+        <p><strong>Duration:</strong> ${formatDuration(duration)}</p>
+        <p><strong>Distance:</strong> ${distance.toFixed(2)} km</p>
+        <p><strong>Points:</strong> ${session.locations.length}</p>
+    `;
+}
+
+
+        function calculateDistance(locations) {
+            let totalDistance = 0;
+            
+            for (let i = 0; i < locations.length - 1; i++) {
+                const distance = getDistanceFromLatLonInKm(
+                    locations[i].lat,
+                    locations[i].lng,
+                    locations[i + 1].lat,
+                    locations[i + 1].lng
+                );
+                totalDistance += distance;
+            }
+            
+            return totalDistance;
+        }
+
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the earth in km
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const d = R * c; // Distance in km
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI/180);
+        }
+
+        function formatDuration(milliseconds) {
+            const seconds = Math.floor(milliseconds / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes % 60}m`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${seconds % 60}s`;
+            } else {
+                return `${seconds}s`;
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            showLogin();
+        });
+    </script>
+    
+    <!-- Google Maps API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkCAjYaggU_pgaQHamM6XFAPsBSjx8ubk&callback=initMap"></script>
+    
+    <script>
+        function initMap() {
+            // This function is called when Google Maps API is loaded
+            console.log('Google Maps API loaded');
+        }
+    </script>
+</body>
+</html>
