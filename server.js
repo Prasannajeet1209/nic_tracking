@@ -35,13 +35,26 @@ const checkSession = (req, res, next) => {
     }  
 };
 // Database connection
+// const db = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: 'pdj@1234', 
+//     database: 'nic_location_tracker'
+// });
+
+
+require('dotenv').config();
+
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'pdj@1234', 
-    database: 'nic_location_tracker'
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE,
+    port: process.env.MYSQLPORT // optional, default = 3306
+    
 });
 
+// console.log("port"+process.env.MYSQLPORT)
 
 // Connect to database
 db.connect((err) => {
